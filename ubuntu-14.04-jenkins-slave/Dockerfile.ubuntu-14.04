@@ -1,0 +1,13 @@
+FROM ubuntu:14.04
+MAINTAINER diodonfrost <diodon.frost@diodonfrost.me>
+
+RUN apt-get update && apt-get dist-upgrade -y && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y \
+    git \
+    apt-transport-https \
+    curl \
+    openssh-server openssh-client \
+ && rm -rf /var/lib/apt/lists/*
+
+ENTRYPOINT ["/sbin/init"]

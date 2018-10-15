@@ -1,0 +1,16 @@
+FROM debian:9
+MAINTAINER diodonfrost <diodon.frost@diodonfrost.me>
+
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    software-properties-common \
+    build-essential \
+    git \
+    systemd \
+    apt-transport-https \
+    curl \
+    gnupg2 \
+    dirmngr \
+    openssh-server openssh-client \
+ && rm -rf /var/lib/apt/lists/*
+
+ENTRYPOINT ["/bin/systemd"]

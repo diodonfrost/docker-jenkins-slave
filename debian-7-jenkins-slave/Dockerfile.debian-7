@@ -1,0 +1,10 @@
+FROM debian:7
+MAINTAINER diodonfrost <diodon.frost@diodonfrost.me>
+
+RUN apt-get update -y  &&  apt-get install --fix-missing && \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y \
+    sudo openssh-server openssh-client \
+    curl gcc python-dev libffi-dev libssl-dev
+
+ENTRYPOINT ["/sbin/init"]
