@@ -47,7 +47,7 @@ before_install:
 
 script:
   - container_id=$(mktemp)
-  - 'sudo docker run --detach --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro ${distribution}-${version}:jenkins-slave > "${container_id}"'
+  - 'sudo docker run --detach --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro ${distribution}-${version}:jenkins-slave -url http://1.1.1.1:8080 secret agent > "${container_id}"'
 
   # Test role
   - 'inspec exec tests/inspec -t docker://$(cat ${container_id})'
