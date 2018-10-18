@@ -17,7 +17,7 @@ rm -f /lib/systemd/system/anaconda.target.wants/*;
 # Install requirements
 RUN pacman --noconfirm -Syu git sudo openssh && pacman --noconfirm -Scc
 
-Install Java 8
+# Install Java 8
 RUN pacman --noconfirm -Syu jdk8-openjdk && pacman --noconfirm -Scc
 
 # Add Jenkins user and group

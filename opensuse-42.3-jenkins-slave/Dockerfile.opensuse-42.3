@@ -14,7 +14,7 @@ rm -f /usr/lib/systemd/system/basic.target.wants/*;\
 rm -f /usr/lib/systemd/system/anaconda.target.wants/*;
 
 # Install packages requirements
-RUN zypper -n install git sudo openssh && zypper clean
+RUN zypper -n install git sudo curl openssh && zypper clean
 
 # Install Java 8
 RUN zypper -n install java-1_8_0-openjdk && zypper clean
