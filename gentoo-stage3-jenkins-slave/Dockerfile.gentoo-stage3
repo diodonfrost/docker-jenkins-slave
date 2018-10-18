@@ -13,4 +13,28 @@ RUN emerge-webrsync && \
     touch /var/cache/eix/portage.eix && chown portage:portage /var/cache/eix/portage.eix && eix-update && \
     rm -rf /usr/portage/*
 
-CMD ["/usr/lib/systemd/systemd"]
+# Install Java
+RUN emerge --quiet virtual/jdk && rm -rf /usr/portage/*
+
+# Add Jenkins user and group
+RUN groupadd -g 10000 jenkins \
+    && useradd -d $HOME -u 10000 -g jenkins jenkins
+
+# Install jenkins jnlp
+RUN curl --create-dirs -sSLo /usr/share/jenkins/slave.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar \
+    && chmod 755 /usr/share/jenkins \
+    && chmod 644 /usr/share/jenkins/slave.jar
+
+COPY jenkins-slave /usr/local/bin/jenkins-slave
+RUN chmod 755 /usr/local/bin/jenkins-slave && chown jenkins:jenkins /usr/local/bin/jenkins-slave
+
+RUN mkdir /home/jenkins/.jenkins \
+    && mkdir -p /home/jenkins/agent \
+    && chown -R jenkins:jenkins /home/jenkins
+
+VOLUME /home/jenkins/.jenkins
+VOLUME /home/jenkins/agent
+
+WORKDIR /home/jenkins
+
+ENTRYPOINT ["/usr/local/bin/jenkins-slave"]
