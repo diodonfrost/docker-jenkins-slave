@@ -11,7 +11,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
  && rm -rf /var/lib/apt/lists/*
 
 # Install Java 8
-RUN apt-get install -y default-jdk && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y default-jdk && rm -rf /var/lib/apt/lists/*
 
 # Add Jenkins user and group
 RUN groupadd -g 10000 jenkins \
