@@ -1,6 +1,9 @@
 FROM amazonlinux:1
 MAINTAINER diodonfrost <diodon.frost@diodonfrost.me>
 
+ENV HOME=/home/jenkins
+ARG VERSION=3.26
+
 # Install epel repository
 RUN rpm -ihv http://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
 
@@ -11,4 +14,28 @@ RUN yum makecache fast && \
     yum clean metadata && \
     yum clean all
 
-CMD ["/sbin/init"]
+# Install Java 8
+RUN yum install -y java-1.8.0-openjdk && yum clean all
+
+# Add Jenkins user and group
+RUN groupadd -g 10000 jenkins \
+       && useradd -d $HOME -u 10000 -g jenkins jenkins
+
+# Install jenkins jnlp
+RUN curl --create-dirs -sSLo /usr/share/jenkins/slave.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar \
+    && chmod 755 /usr/share/jenkins \
+    && chmod 644 /usr/share/jenkins/slave.jar
+
+COPY jenkins-slave /usr/local/bin/jenkins-slave
+RUN chmod 755 /usr/local/bin/jenkins-slave && chown jenkins:jenkins /usr/local/bin/jenkins-slave
+
+USER jenkins
+RUN mkdir /home/jenkins/.jenkins \
+    && mkdir -p /home/jenkins/agent
+
+VOLUME /home/jenkins/.jenkins
+VOLUME /home/jenkins/agent
+
+WORKDIR /home/jenkins
+
+ENTRYPOINT ["/usr/local/bin/jenkins-slave"]

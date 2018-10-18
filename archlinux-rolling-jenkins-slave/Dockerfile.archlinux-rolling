@@ -1,5 +1,8 @@
-FROM base/archlinux:2018.08.01
+FROM base/archlinux:latest
 MAINTAINER diodonfrost <diodon.frost@diodonfrost.me>
+
+ENV HOME=/home/jenkins
+ARG VERSION=3.26
 
 RUN pacman --noconfirm -Sy systemd procps; pacman --noconfirm -Scc ;\
 (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
@@ -14,6 +17,31 @@ rm -f /lib/systemd/system/anaconda.target.wants/*;
 # Install requirements
 RUN pacman --noconfirm -Syu git sudo openssh && pacman --noconfirm -Scc
 
+Install Java 8
+RUN pacman --noconfirm -Syu jdk8-openjdk && pacman --noconfirm -Scc
+
+# Add Jenkins user and group
+RUN groupadd -g 10000 jenkins \
+   && useradd -d $HOME -u 10000 -g jenkins jenkins
+
+# Install jenkins jnlp
+RUN curl --create-dirs -sSLo /usr/share/jenkins/slave.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar \
+   && chmod 755 /usr/share/jenkins \
+   && chmod 644 /usr/share/jenkins/slave.jar
+
+COPY jenkins-slave /usr/local/bin/jenkins-slave
+RUN chmod 755 /usr/local/bin/jenkins-slave && chown jenkins:jenkins /usr/local/bin/jenkins-slave
+
+USER jenkins
+RUN mkdir /home/jenkins/.jenkins \
+   && mkdir -p /home/jenkins/agent
+
+VOLUME /home/jenkins/.jenkins
+VOLUME /home/jenkins/agent
+
+# Systemd volume
 VOLUME ["/sys/fs/cgroup"]
 
-CMD ["/usr/lib/systemd/systemd"]
+WORKDIR /home/jenkins
+
+ENTRYPOINT ["/usr/local/bin/jenkins-slave"]

@@ -1,8 +1,6 @@
 FROM centos:7
 MAINTAINER diodonfrost <diodon.frost@diodonfrost.me>
 
-ENV HOME /home/jenkins
-ENV AGENT_WORKDIR=/home/jenkins/agent
 ENV HOME=/home/jenkins
 ARG VERSION=3.26
 
@@ -24,7 +22,7 @@ RUN yum -y install git sudo openssh-server openssh-clients curl
 RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
 
 # Install Java 8
-RUN yum install -y java-1.8.0-openjdk
+RUN yum install -y java-1.8.0-openjdk && yum clean all
 
 # Add Jenkins user and group
 RUN groupadd -g 10000 jenkins \
@@ -38,9 +36,9 @@ RUN curl --create-dirs -sSLo /usr/share/jenkins/slave.jar https://repo.jenkins-c
 COPY jenkins-slave /usr/local/bin/jenkins-slave
 RUN chmod 755 /usr/local/bin/jenkins-slave && chown jenkins:jenkins /usr/local/bin/jenkins-slave
 
-USER jenkins
 RUN mkdir /home/jenkins/.jenkins \
-    && mkdir -p /home/jenkins/agent
+    && mkdir -p /home/jenkins/agent \
+    && chown -R jenkins:jenkins /home/jenkins
 
 VOLUME /home/jenkins/.jenkins
 VOLUME /home/jenkins/agent
@@ -51,5 +49,3 @@ VOLUME ["/sys/fs/cgroup"]
 WORKDIR /home/jenkins
 
 ENTRYPOINT ["/usr/local/bin/jenkins-slave"]
-
-CMD ["/usr/sbin/init"]
