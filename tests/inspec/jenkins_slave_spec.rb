@@ -2,6 +2,7 @@
 
 java_package = 'java-1.8.0-openjdk' if os.family == 'redhat'
 java_package = 'openjdk-8-jdk' if os.family == 'debian'
+java_package = 'java-1_8_0-openjdk' if os.name == 'opensuse'
 
 control 'jenkins-slave-01' do
   impact 1.0
@@ -29,5 +30,14 @@ control 'jenkins-slave-03' do
   describe file('/usr/local/bin/jenkins-slave') do
     it { should exist }
     it { should be_executable }
+  end
+end
+
+control 'jenkins-slave-04' do
+  impact 1.0
+  title 'Jenkins jnlp'
+  desc 'Jenkins jnlp script should functionnal'
+  describe command('/usr/local/bin/jenkins-slave') do
+    its('exit_status') { should eq 0 }
   end
 end

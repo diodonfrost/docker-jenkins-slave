@@ -21,7 +21,7 @@ RUN curl --create-dirs -sSLo /usr/share/jenkins/slave.jar https://repo.jenkins-c
 COPY jenkins-slave /usr/local/bin/jenkins-slave
 RUN chmod 755 /usr/local/bin/jenkins-slave && chown jenkins:jenkins /usr/local/bin/jenkins-slave
 
-RUN mkdir /home/jenkins/.jenkins \
+RUN mkdir -p /home/jenkins/.jenkins \
     && mkdir -p /home/jenkins/agent \
     && chown -R jenkins:jenkins /home/jenkins
 
