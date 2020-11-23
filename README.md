@@ -1,7 +1,5 @@
 # docker-jenkins-slave
 
-[![Build Status](https://travis-ci.org/diodonfrost/docker-jenkins-slave.svg?branch=master)](https://travis-ci.org/diodonfrost/docker-jenkins-slave)
-
 Provides dockerfiles with jenkins-slave and in some case systemd integration.
 
 Provides docker containers use for use jenkins-slave with the jenkins kubernetes plugin.
